@@ -5,7 +5,7 @@ using UnityEngine;
 public class Tree : MonoBehaviour, IRaycastable
 {
     public string displayName;
-    public GameObject stumpPrefab;
+    public GameObject logPrefab;
 
     private bool cutDown = false;
 
@@ -18,15 +18,18 @@ public class Tree : MonoBehaviour, IRaycastable
     {
         if (!cutDown)
         {
-            transform.gameObject.GetComponent<Rigidbody>().isKinematic = false;
-            Instantiate(stumpPrefab, transform.position, Quaternion.identity);
+            Rigidbody treeRigidBody = transform.gameObject.GetComponent<Rigidbody>();
+            treeRigidBody.isKinematic = false;
+            treeRigidBody.AddForceAtPosition(treeRigidBody.rotation * Vector3.forward * 20f, new Vector3(0, callingController.transform.position.y, 0));
+
             cutDown = true;
-        } else
+        }
+        else
         {
             Debug.Log("Chopped tree");
+            Instantiate(logPrefab, transform.position, Quaternion.identity);
             Destroy(gameObject);
         }
         return true;
     }
-
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -14,7 +15,7 @@ public class PlayerController : MonoBehaviour
     public float jumpHeight = 3f;
     public int maxInteractableDistance = 10;
     public LayerMask groundMask;
-    //public Text interactableText;
+    public Text interactableText;
 
     Vector3 velocity;
     bool isGrounded;
@@ -28,6 +29,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         HandlePlayerMovement();
+        HandlePlayerInteraction();
     }
 
     private void HandlePlayerMovement()
@@ -64,22 +66,22 @@ public class PlayerController : MonoBehaviour
         controller.Move(velocity * Time.deltaTime);
     }
 
-    //private void HandlePlayerInteraction()
-    //{
-    //    RaycastHit hit;
-    //    Debug.DrawRay(mainCamera.transform.position, mainCamera.transform.forward * maxInteractableDistance, Color.white);
-    //    if (Physics.Raycast(mainCamera.transform.position + new Vector3(0, 0, 0.2f), mainCamera.transform.TransformDirection(Vector3.forward), out hit, maxInteractableDistance) && hit.transform.gameObject.GetComponent<IRaycastable>() != null)
-    //    {
-    //        interactableText.text = hit.transform.gameObject.GetComponent<IRaycastable>().DisplayName();
-    //        if (Input.GetMouseButtonDown(0))
-    //        {
-    //            hit.transform.gameObject.GetComponentInParent<IRaycastable>().HandleRaycast(this);
-    //        }
-    //    }
-    //    else
-    //    {
-    //        interactableText.text = "";
-    //    }
-    //}
+    private void HandlePlayerInteraction()
+    {
+        RaycastHit hit;
+        Debug.DrawRay(mainCamera.transform.position, mainCamera.transform.forward * maxInteractableDistance, Color.white);
+        if (Physics.Raycast(mainCamera.transform.position + new Vector3(0, 0, 0.2f), mainCamera.transform.TransformDirection(Vector3.forward), out hit, maxInteractableDistance) && hit.transform.gameObject.GetComponent<IRaycastable>() != null)
+        {
+            interactableText.text = hit.transform.gameObject.GetComponent<IRaycastable>().DisplayName();
+            if (Input.GetMouseButtonDown(0))
+            {
+                hit.transform.gameObject.GetComponentInParent<IRaycastable>().HandleRaycast(this);
+            }
+        }
+        else
+        {
+            interactableText.text = "";
+        }
+    }
 
 }
