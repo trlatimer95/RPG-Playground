@@ -27,7 +27,10 @@ public class Tree : MonoBehaviour, IRaycastable
         else
         {
             Debug.Log("Chopped tree");
-            Instantiate(logPrefab, transform.position, Quaternion.identity);
+            if (logPrefab != null)
+            {
+                Instantiate(logPrefab, transform.position, Quaternion.identity);
+            }
             Destroy(gameObject);
         }
         return true;
