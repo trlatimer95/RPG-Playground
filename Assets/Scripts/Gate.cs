@@ -4,10 +4,30 @@ using UnityEngine;
 
 public class Gate : MonoBehaviour, IRaycastable
 {
-    public GameObject gate;
     public string displayName;
+    public float cooldownTime = 4f;
 
-    private bool isOpen = false;
+    private Animator animator;
+    private bool cooldown;
+    private float cooldownElapsed = 0;
+
+    private void Start()
+    {
+        animator = GetComponent<Animator>();
+    }
+
+    private void Update()
+    {
+        if (cooldown)
+        {
+            cooldownElapsed += Time.deltaTime;
+            if (cooldownElapsed > cooldownTime)
+            {
+                cooldown = false;
+                cooldownElapsed = 0;
+            }
+        }
+    }
 
     string IRaycastable.DisplayName()
     {
@@ -16,14 +36,10 @@ public class Gate : MonoBehaviour, IRaycastable
 
     bool IRaycastable.HandleRaycast(PlayerController callingController)
     {
-        if (isOpen)
+        if (!cooldown)
         {
-            gate.transform.Translate(0, -3, 0);
-            isOpen = false;
-        } else
-        {
-            gate.transform.Translate(0, 3, 0);
-            isOpen = true;
+            cooldown = true;
+            animator.SetBool("open", !animator.GetBool("open"));
         }
         return true;
     }
