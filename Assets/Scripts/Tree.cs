@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class Tree : MonoBehaviour, IRaycastable
 {
     public string displayName;
