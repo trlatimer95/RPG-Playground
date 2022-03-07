@@ -1,29 +1,42 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-    public CharacterController controller;
-    public Transform groundCheck;
-    public Camera mainCamera;
-    public float speed = 12f;
-    public float groundDistance = 0.4f;
-    public float mouseSensitivity = 100f;
+    [Header("Movement")]
+    public float playerSpeed = 2.0f;
     public float jumpHeight = 3f;
+    public float mouseSensitivity = 100f;
+    public float gravityMultiplier = 3.0f;
+    public float groundDistance = 0.04f;
+    public LayerMask groundLayer;
+
+    [Header("Interaction")]
     public int maxInteractableDistance = 10;
-    public LayerMask groundMask;
     public Text interactableText;
 
-    Vector3 velocity;
-    bool isGrounded;
-    float xRotation = 0f;
+    [Header("Components")]
+    public CharacterController controller;
+    public Camera mainCamera;
+    public Transform groundChecker;
+
+    [Header("Status")]
+    public Vector3 playerVelocity;
+    public bool isGrounded;
+
+    // Input values
+    private Vector2 movementInput = Vector2.zero;
+    private Vector2 lookInput = Vector2.zero;
+    private bool jumpInput = false;
 
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
+        if (controller == null)
+            controller = gameObject.GetComponent<CharacterController>();
+        if (mainCamera == null)
+            mainCamera = gameObject.GetComponentInChildren<Camera>();
     }
 
     void Update()
@@ -34,36 +47,32 @@ public class PlayerController : MonoBehaviour
 
     private void HandlePlayerMovement()
     {
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+        isGrounded = Physics.CheckSphere(groundChecker.position, groundDistance, groundLayer, QueryTriggerInteraction.Ignore);
+        if (isGrounded && playerVelocity.y < 0)
+            playerVelocity.y = 0f;
 
-        xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+        // Move Player
+        Vector3 move = transform.right * movementInput.x + transform.forward * movementInput.y;
+        controller.Move(move * Time.deltaTime * playerSpeed);
 
-        mainCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-        transform.Rotate(Vector3.up * mouseX);
-
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-
-        if (isGrounded && velocity.y < 0)
+        // Look around
+        if (lookInput != Vector2.zero)
         {
-            velocity.y = -2f;
+            float mouseX = lookInput.x * mouseSensitivity * Time.deltaTime;
+            float mouseY = lookInput.y * mouseSensitivity * Time.deltaTime;
+
+            float xRotation = 0f;
+            xRotation -= mouseY;
+            xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+            transform.Rotate(Vector3.up * mouseX);
         }
 
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
+        if (jumpInput && isGrounded)
+            playerVelocity.y += jumpHeight; //Mathf.Sqrt(jumpHeight * -2f * gravityMultiplier);
 
-        Vector3 move = transform.right * x + transform.forward * z;
-
-        controller.Move(move * speed * Time.deltaTime);
-
-        if (Input.GetButtonDown("Jump") && isGrounded)
-        {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2 * Physics.gravity.y);
-        }
-
-        velocity += Physics.gravity * 2 * Time.deltaTime;
-        controller.Move(velocity * Time.deltaTime);
+        playerVelocity.y += gravityMultiplier * Time.deltaTime;
+        controller.Move(playerVelocity * Time.deltaTime);
     }
 
     private void HandlePlayerInteraction()
@@ -84,4 +93,21 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+
+    #region Input Events
+    public void OnMove(InputAction.CallbackContext context)
+    {
+        movementInput = context.ReadValue<Vector2>();
+    }
+
+    public void OnLook(InputAction.CallbackContext context)
+    {
+        lookInput = context.ReadValue<Vector2>();
+    }
+
+    public void OnJump(InputAction.CallbackContext context)
+    {
+        jumpInput = context.action.triggered;
+    }
+    #endregion
 }
