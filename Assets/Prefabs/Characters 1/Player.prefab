@@ -238,6 +238,22 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 8e86ec4d-47cf-4369-a718-12260d46be7d
     m_ActionName: UI/TrackedDeviceOrientation
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4218792956673618306}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: OnInteract
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 4fb43a2d-a6e6-4ef3-a5bb-e6f914702830
+    m_ActionName: Player/Interact[/Keyboard/e]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -274,18 +290,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerSpeed: 5
-  jumpHeight: 3
-  mouseSensitivity: 100
-  gravityMultiplier: 3
-  groundDistance: 0.04
+  jumpHeight: 5
+  gravityMultiplier: -12
+  groundDistance: 0.16
   groundLayer:
     serializedVersion: 2
-    m_Bits: 0
-  maxInteractableDistance: 10
+    m_Bits: 64
+  mouseSensitivity: 30
+  maxCameraAngle: 90
+  minCameraAngle: -45
+  maxInteractableDistance: 3
   interactableText: {fileID: 0}
   controller: {fileID: 4218792956673618309}
   mainCamera: {fileID: 4218792956601023061}
-  groundChecker: {fileID: 0}
+  groundChecker: {fileID: 4218792957893665130}
   playerVelocity: {x: 0, y: 0, z: 0}
   isGrounded: 0
 --- !u!1 &4218792957893665133

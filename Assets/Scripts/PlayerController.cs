@@ -7,14 +7,18 @@ public class PlayerController : MonoBehaviour
     [Header("Movement")]
     public float playerSpeed = 2.0f;
     public float jumpHeight = 3f;
-    public float mouseSensitivity = 100f;
     public float gravityMultiplier = 3.0f;
     public float groundDistance = 0.04f;
     public LayerMask groundLayer;
 
+    [Header("Look")]
+    public float mouseSensitivity = 100f;
+    private float xRotation = 0f;
+
     [Header("Interaction")]
     public int maxInteractableDistance = 10;
     public Text interactableText;
+    private GameObject currentInteractableObject;
 
     [Header("Components")]
     public CharacterController controller;
@@ -28,7 +32,6 @@ public class PlayerController : MonoBehaviour
     // Input values
     private Vector2 movementInput = Vector2.zero;
     private Vector2 lookInput = Vector2.zero;
-    private bool jumpInput = false;
 
     void Start()
     {
@@ -42,7 +45,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         HandlePlayerMovement();
-        HandlePlayerInteraction();
+        CheckForInteractable();
     }
 
     private void HandlePlayerMovement()
@@ -61,36 +64,46 @@ public class PlayerController : MonoBehaviour
             float mouseX = lookInput.x * mouseSensitivity * Time.deltaTime;
             float mouseY = lookInput.y * mouseSensitivity * Time.deltaTime;
 
-            float xRotation = 0f;
             xRotation -= mouseY;
-            xRotation = Mathf.Clamp(xRotation, -90f, 90f);
-
+            xRotation = Mathf.Clamp(xRotation,-90, 90);
+           
+            mainCamera.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
             transform.Rotate(Vector3.up * mouseX);
         }
-
-        if (jumpInput && isGrounded)
-            playerVelocity.y += jumpHeight; //Mathf.Sqrt(jumpHeight * -2f * gravityMultiplier);
 
         playerVelocity.y += gravityMultiplier * Time.deltaTime;
         controller.Move(playerVelocity * Time.deltaTime);
     }
 
-    private void HandlePlayerInteraction()
+    private void CheckForInteractable()
     {
         RaycastHit hit;
         Debug.DrawRay(mainCamera.transform.position, mainCamera.transform.forward * maxInteractableDistance, Color.white);
         if (Physics.Raycast(mainCamera.transform.position + new Vector3(0, 0, 0.2f), mainCamera.transform.TransformDirection(Vector3.forward), out hit, maxInteractableDistance) && hit.transform.gameObject.GetComponent<IRaycastable>() != null)
         {
-            interactableText.text = hit.transform.gameObject.GetComponent<IRaycastable>().DisplayName();
-            if (Input.GetMouseButtonDown(0))
-            {
-                hit.transform.gameObject.GetComponentInParent<IRaycastable>().HandleRaycast(this);
-            }
+            interactableText.text = "(E) " + hit.transform.gameObject.GetComponent<IRaycastable>().DisplayName();
+            currentInteractableObject = hit.transform.gameObject;
         }
         else
         {
             interactableText.text = "";
+            currentInteractableObject = null;
         }
+    }
+
+    private void TryInteract()
+    {
+        if (currentInteractableObject != null)
+        {
+            Debug.Log("Interacted");
+            currentInteractableObject.GetComponentInParent<IRaycastable>().HandleRaycast(this);
+        }
+    }
+
+    private void TryJump()
+    {
+        if (isGrounded)
+            playerVelocity.y += Mathf.Sqrt(jumpHeight * -2f * gravityMultiplier);
     }
 
 
@@ -107,7 +120,14 @@ public class PlayerController : MonoBehaviour
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        jumpInput = context.action.triggered;
+        if (context.action.triggered)
+            TryJump();
+    }
+
+    public void OnInteract(InputAction.CallbackContext context)
+    {
+        if (context.action.triggered)
+            TryInteract();
     }
     #endregion
 }
