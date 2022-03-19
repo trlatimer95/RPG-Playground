@@ -24,9 +24,10 @@ public class PlayerController : MonoBehaviour
     public CharacterController controller;
     public Camera mainCamera;
     public Transform groundChecker;
+    public Animator animator;
 
     [Header("Status")]
-    public Vector3 playerVelocity;
+    public Vector3 playerVelocity = Vector3.zero;
     public bool isGrounded;
 
     // Input values
@@ -40,6 +41,8 @@ public class PlayerController : MonoBehaviour
             controller = gameObject.GetComponent<CharacterController>();
         if (mainCamera == null)
             mainCamera = gameObject.GetComponentInChildren<Camera>();
+        if (animator == null)
+            animator = gameObject.GetComponentInChildren<Animator>();
     }
 
     void Update()
@@ -56,6 +59,8 @@ public class PlayerController : MonoBehaviour
 
         // Move Player
         Vector3 move = transform.right * movementInput.x + transform.forward * movementInput.y;
+        animator.SetFloat("inputX", movementInput.x);
+        animator.SetFloat("inputY", movementInput.y);
         controller.Move(move * Time.deltaTime * playerSpeed);
 
         // Look around
@@ -66,7 +71,7 @@ public class PlayerController : MonoBehaviour
 
             xRotation -= mouseY;
             xRotation = Mathf.Clamp(xRotation,-90, 90);
-           
+
             mainCamera.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
             transform.Rotate(Vector3.up * mouseX);
         }
