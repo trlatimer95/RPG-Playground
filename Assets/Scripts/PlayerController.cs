@@ -5,14 +5,14 @@ using UnityEngine.UI;
 public class PlayerController : MonoBehaviour
 {
     [Header("Movement")]
-    public float playerSpeed = 2.0f;
-    public float jumpHeight = 3f;
-    public float gravityMultiplier = 3.0f;
-    public float groundDistance = 0.04f;
-    public LayerMask groundLayer;
+    public float walkingSpeed = 7.5f;
+    public float runningSpeed = 11.5f;
+    public float jumpSpeed = 8.0f;
+    public float gravity = 20.0f;
 
     [Header("Look")]
-    public float mouseSensitivity = 100f;
+    public float lookSpeed = 2.0f;
+    public float lookXLimit = 45.0f;
     private float xRotation = 0f;
 
     [Header("Interaction")]
@@ -23,12 +23,14 @@ public class PlayerController : MonoBehaviour
     [Header("Components")]
     public CharacterController controller;
     public Camera mainCamera;
-    public Transform groundChecker;
     public Animator animator;
 
     [Header("Status")]
+    public bool canMove = true;
+    public bool sprinting = false;
+    public bool jumping = false;
+    Vector3 moveDirection = Vector3.zero;
     public Vector3 playerVelocity = Vector3.zero;
-    public bool isGrounded;
 
     // Input values
     private Vector2 movementInput = Vector2.zero;
@@ -37,6 +39,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         if (controller == null)
             controller = gameObject.GetComponent<CharacterController>();
         if (mainCamera == null)
@@ -53,31 +56,39 @@ public class PlayerController : MonoBehaviour
 
     private void HandlePlayerMovement()
     {
-        isGrounded = Physics.CheckSphere(groundChecker.position, groundDistance, groundLayer, QueryTriggerInteraction.Ignore);
-        if (isGrounded && playerVelocity.y < 0)
-            playerVelocity.y = 0f;
+        Vector3 forward = transform.TransformDirection(Vector3.forward);
+        Vector3 right = transform.TransformDirection(Vector3.right);
 
-        // Move Player
-        Vector3 move = transform.right * movementInput.x + transform.forward * movementInput.y;
-        animator.SetFloat("inputX", movementInput.x);
-        animator.SetFloat("inputY", movementInput.y);
-        controller.Move(move * Time.deltaTime * playerSpeed);
+        // Determine speeds and direction
+        float curSpeedX = canMove ? (sprinting ? runningSpeed : walkingSpeed) * movementInput.y : 0;
+        float curSpeedY = canMove ? (sprinting ? runningSpeed : walkingSpeed) * movementInput.x : 0;
+        float movementDirectionY = moveDirection.y;
+        moveDirection = (forward * curSpeedX) + (right * curSpeedY);
 
-        // Look around
-        if (lookInput != Vector2.zero)
+        // Update animation
+        animator.SetFloat("inputX", curSpeedX);
+        animator.SetFloat("inputY", curSpeedY);
+
+        // Handle jumping
+        if (jumping && canMove && controller.isGrounded)
+            moveDirection.y = jumpSpeed;
+        else
+            moveDirection.y = movementDirectionY;
+
+        // Apply gravity
+        if (!controller.isGrounded)
+            moveDirection.y -= gravity * Time.deltaTime;
+
+        controller.Move(moveDirection * Time.deltaTime);
+
+        // Handle player look
+        if (canMove)
         {
-            float mouseX = lookInput.x * mouseSensitivity * Time.deltaTime;
-            float mouseY = lookInput.y * mouseSensitivity * Time.deltaTime;
-
-            xRotation -= mouseY;
-            xRotation = Mathf.Clamp(xRotation,-90, 90);
-
+            xRotation += -lookInput.y * lookSpeed;
+            xRotation = Mathf.Clamp(xRotation, -lookXLimit, lookXLimit);
             mainCamera.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
-            transform.Rotate(Vector3.up * mouseX);
+            transform.rotation *= Quaternion.Euler(0, lookInput.x * lookSpeed, 0);
         }
-
-        playerVelocity.y += gravityMultiplier * Time.deltaTime;
-        controller.Move(playerVelocity * Time.deltaTime);
     }
 
     private void CheckForInteractable()
@@ -105,11 +116,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void TryJump()
-    {
-        if (isGrounded)
-            playerVelocity.y += Mathf.Sqrt(jumpHeight * -2f * gravityMultiplier);
-    }
+    //private void TryJump()
+    //{
+    //    if (isGrounded)
+    //        playerVelocity.y += Mathf.Sqrt(jumpHeight * -2f * gravityMultiplier);
+    //}
 
 
     #region Input Events
@@ -123,10 +134,14 @@ public class PlayerController : MonoBehaviour
         lookInput = context.ReadValue<Vector2>();
     }
 
+    public void OnSprint(InputAction.CallbackContext context)
+    {
+        sprinting = context.action.triggered;
+    }
+
     public void OnJump(InputAction.CallbackContext context)
     {
-        if (context.action.triggered)
-            TryJump();
+        jumping = context.action.triggered;
     }
 
     public void OnInteract(InputAction.CallbackContext context)

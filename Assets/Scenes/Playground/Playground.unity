@@ -128,31 +128,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4393292613918607967, guid: bc4f9c698f6a79d4ab40f92001ce85ac, type: 3}
   m_PrefabInstance: {fileID: 4393292613914574836}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &20488425 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4218792956673618311, guid: 72b8993ae40ece04f872b680a2104225, type: 3}
+--- !u!114 &20488431 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4218792956673618306, guid: 72b8993ae40ece04f872b680a2104225, type: 3}
   m_PrefabInstance: {fileID: 4218792957529462566}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &20488430
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 20488425}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e31ed53a723de7147974886c47967e10, type: 3}
+  m_Script: {fileID: 11500000, guid: 04b35cefddad91b41a5dd480d4b7b34a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkingSpeed: 7.5
-  runningSpeed: 11.5
-  jumpSpeed: 8
-  gravity: 20
-  playerCamera: {fileID: 1255308250}
-  lookSpeed: 2
-  lookXLimit: 75
-  canMove: 1
 --- !u!1 &171407285
 GameObject:
   m_ObjectHideFlags: 0
@@ -635,11 +621,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!20 &1255308250 stripped
-Camera:
-  m_CorrespondingSourceObject: {fileID: 4218792956601023061, guid: 72b8993ae40ece04f872b680a2104225, type: 3}
-  m_PrefabInstance: {fileID: 4218792957529462566}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1285636043 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 488024, guid: 9d512b24ffbedb841a3b360fd5f32d6c, type: 3}
@@ -1064,8 +1045,28 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 479503511}
     - target: {fileID: 4218792956673618306, guid: 72b8993ae40ece04f872b680a2104225, type: 3}
+      propertyPath: jumpSpeed
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4218792956673618306, guid: 72b8993ae40ece04f872b680a2104225, type: 3}
+      propertyPath: lookSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4218792956673618306, guid: 72b8993ae40ece04f872b680a2104225, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4218792956673618306, guid: 72b8993ae40ece04f872b680a2104225, type: 3}
+      propertyPath: lookXLimit
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 4218792956673618306, guid: 72b8993ae40ece04f872b680a2104225, type: 3}
+      propertyPath: runningSpeed
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4218792956673618306, guid: 72b8993ae40ece04f872b680a2104225, type: 3}
+      propertyPath: walkingSpeed
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4218792956673618306, guid: 72b8993ae40ece04f872b680a2104225, type: 3}
       propertyPath: maxCameraAngle
@@ -1126,6 +1127,46 @@ PrefabInstance:
     - target: {fileID: 4218792956673618311, guid: 72b8993ae40ece04f872b680a2104225, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 4218792957529462569, guid: 72b8993ae40ece04f872b680a2104225, type: 3}
+      propertyPath: m_ActionEvents.Array.size
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 4218792957529462569, guid: 72b8993ae40ece04f872b680a2104225, type: 3}
+      propertyPath: m_ActionEvents.Array.data[15].m_ActionId
+      value: 9e3113bd-8e5f-4e0d-97ec-4db59410b968
+      objectReference: {fileID: 0}
+    - target: {fileID: 4218792957529462569, guid: 72b8993ae40ece04f872b680a2104225, type: 3}
+      propertyPath: m_ActionEvents.Array.data[15].m_ActionName
+      value: Player/Sprint[/Keyboard/shift]
+      objectReference: {fileID: 0}
+    - target: {fileID: 4218792957529462569, guid: 72b8993ae40ece04f872b680a2104225, type: 3}
+      propertyPath: m_ActionEvents.Array.data[15].m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4218792957529462569, guid: 72b8993ae40ece04f872b680a2104225, type: 3}
+      propertyPath: m_ActionEvents.Array.data[15].m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4218792957529462569, guid: 72b8993ae40ece04f872b680a2104225, type: 3}
+      propertyPath: m_ActionEvents.Array.data[15].m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 20488431}
+    - target: {fileID: 4218792957529462569, guid: 72b8993ae40ece04f872b680a2104225, type: 3}
+      propertyPath: m_ActionEvents.Array.data[15].m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4218792957529462569, guid: 72b8993ae40ece04f872b680a2104225, type: 3}
+      propertyPath: m_ActionEvents.Array.data[15].m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnSprint
+      objectReference: {fileID: 0}
+    - target: {fileID: 4218792957529462569, guid: 72b8993ae40ece04f872b680a2104225, type: 3}
+      propertyPath: m_ActionEvents.Array.data[15].m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PlayerController, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 4218792957529462569, guid: 72b8993ae40ece04f872b680a2104225, type: 3}
+      propertyPath: m_ActionEvents.Array.data[15].m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 8049233938081561398, guid: 72b8993ae40ece04f872b680a2104225, type: 3}
       propertyPath: m_Avatar
