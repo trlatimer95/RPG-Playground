@@ -23,12 +23,14 @@ public class PlayerController : MonoBehaviour
     [Header("Components")]
     public CharacterController controller;
     public Camera mainCamera;
+    public Camera followCamera;
     public Animator animator;
 
     [Header("Status")]
     public bool canMove = true;
     public bool sprinting = false;
     public bool jumping = false;
+    public bool thirdPerson = false;
     Vector3 moveDirection = Vector3.zero;
     public Vector3 playerVelocity = Vector3.zero;
 
@@ -50,6 +52,10 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            ToggleCamera();
+        }
         HandlePlayerMovement();
         CheckForInteractable();
     }
@@ -85,8 +91,12 @@ public class PlayerController : MonoBehaviour
         if (canMove)
         {
             xRotation += -lookInput.y * lookSpeed;
-            xRotation = Mathf.Clamp(xRotation, -lookXLimit, lookXLimit);
-            mainCamera.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
+            xRotation = Mathf.Clamp(xRotation, -lookXLimit, lookXLimit); // TODO Handle Third person camera look (up/down)
+            if (thirdPerson)
+                followCamera.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
+            else
+                mainCamera.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
+
             transform.rotation *= Quaternion.Euler(0, lookInput.x * lookSpeed, 0);
         }
     }
@@ -113,6 +123,21 @@ public class PlayerController : MonoBehaviour
         {
             Debug.Log("Interacted");
             currentInteractableObject.GetComponentInParent<IRaycastable>().HandleRaycast(this);
+        }
+    }
+
+    private void ToggleCamera()
+    {
+        thirdPerson = !thirdPerson;
+        if (thirdPerson)
+        {
+            mainCamera.enabled = false;
+            followCamera.enabled = true;
+        }
+        else
+        {
+            followCamera.enabled = false;
+            mainCamera.enabled = true;
         }
     }
 
